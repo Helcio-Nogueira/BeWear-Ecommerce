@@ -144,7 +144,7 @@ const SignUpForm = () => {
               />
             </CardContent>
             <CardFooter>
-              <Button type="submit">Salvar</Button>
+              <Button type="submit">Criar</Button>
             </CardFooter>
           </form>
         </Form>
