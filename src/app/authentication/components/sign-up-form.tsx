@@ -1,7 +1,9 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import z from "zod";
 
 import { Button } from "@/components/ui/button";
@@ -22,6 +24,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { authClient } from "@/lib/auth-client";
 
 const formSchema = z
   .object({
@@ -45,7 +48,7 @@ const formSchema = z
 type FormValues = z.infer<typeof formSchema>;
 
 const SignUpForm = () => {
-  // 1. Define your form.
+  const router = useRouter();
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -56,10 +59,27 @@ const SignUpForm = () => {
     },
   });
 
-  // 2. Define a submit handler.
-  function onSubmit(values: FormValues) {
-    console.log("FORMULÁRIO VALIDADO E ENVIADO");
-    console.log(values);
+  async function onSubmit(values: FormValues) {
+    await authClient.signUp.email({
+      name: values.name,
+      password: values.password,
+      email: values.email,
+      fetchOptions: {
+        onSuccess: () => {
+          toast.success("Conta criada com sucesso!");
+          router.push("/");
+        },
+        onError: (error) => {
+          if (error.error.code === "USER_ALREADY_EXISTS") {
+            toast.error("Uma conta com esse email já existe.");
+            form.setError("email", {
+              message: "Email já cadastrado!",
+            });
+          }
+          toast.error(error.error.message);
+        },
+      },
+    });
   }
   return (
     <div>
