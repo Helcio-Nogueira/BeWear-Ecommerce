@@ -83,7 +83,7 @@ const SignUpForm = () => {
   }
   return (
     <div>
-      <Card>
+      <Card className="w-full">
         <CardHeader>
           <CardTitle>Criar conta</CardTitle>
           <CardDescription>
